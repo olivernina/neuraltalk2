@@ -1,7 +1,7 @@
 require 'nn'
 local utils = require 'misc.utils'
 local net_utils = require 'misc.net_utils'
-local LSTM = require 'misc.NF'
+local LSTM = require 'misc.LSTM'
 
 -------------------------------------------------------------------------------
 -- Language Model core
