@@ -34,19 +34,18 @@ function LSTM.lstm(input_size, output_size, rnn_size, n, dropout)
     local all_input_sums = nn.CAddTable()({i2h, h2h})
 
     local reshaped = nn.Reshape(3, rnn_size)(all_input_sums)
-    local  n1, n3, n4 = nn.SplitTable(2)(reshaped):split(3)
+    local  n2, n3, n4 = nn.SplitTable(2)(reshaped):split(3)
     -- decode the gates
-    local in_gate = nn.Sigmoid()(n1)
---    local forget_gate = nn.Sigmoid()(n2)
+--    local in_gate = nn.Sigmoid()(n1)
+    local forget_gate = nn.Sigmoid()(n2)
     local out_gate = nn.Sigmoid()(n3)
     -- decode the write inputs
     local in_transform = nn.Tanh()(n4)
     -- perform the LSTM update
-    local next_c           = nn.CAddTable()({
-        prev_c,
---        nn.CMulTable()({forget_gate, prev_c}),
---            nn.Identity()(in_transform)
-        nn.CMulTable()({in_gate,     in_transform})
+    local coupled = nn.AddConstant(1,false)(nn.MulConstant(-1,false)(forget_gate))
+    local next_c  = nn.CAddTable()({
+        nn.CMulTable()({ forget_gate , prev_c}),
+        nn.CMulTable()({coupled,     in_transform})
       })
     -- gated cells form the output
     local next_h = nn.CMulTable()({out_gate, nn.Tanh()(next_c)})

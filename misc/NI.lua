@@ -44,7 +44,7 @@ function LSTM.lstm(input_size, output_size, rnn_size, n, dropout)
     -- perform the LSTM update
     local next_c           = nn.CAddTable()({
         nn.CMulTable()({forget_gate, prev_c}),
-            nn.Identity()(in_transform)
+            in_transform
 --        nn.CMulTable()({in_gate,     in_transform})
       })
     -- gated cells form the output

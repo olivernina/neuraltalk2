@@ -42,10 +42,9 @@ function LSTM.lstm(input_size, output_size, rnn_size, n, dropout)
     -- decode the write inputs
     local in_transform = nn.Tanh()(n4)
     -- perform the LSTM update
-    local next_c           = nn.CAddTable()({
-        prev_c,
---        nn.CMulTable()({forget_gate, prev_c}),
---            nn.Identity()(in_transform)
+    local coupled = nn.AddConstant(1,false)(nn.MulConstant(-1,false)(in_gate))
+    local next_c  = nn.CAddTable()({
+        nn.CMulTable()({ coupled , prev_c}),
         nn.CMulTable()({in_gate,     in_transform})
       })
     -- gated cells form the output
